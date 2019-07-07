@@ -3,8 +3,21 @@ language: java
 jdk:
   - openjdk8
 before_install:
-  - sudo apt-get install -y python-pip
-  - sudo pip install ansible==2.8.1
+  - sudo apt-get update -q
+  - sudo apt-get install -yq python3-pip
+  - sudo pip install -q ansible==2.8.1
+  - wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
+  - wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
+  - sudo sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -sc) contrib" >> /etc/apt/sources.list.d/virtualbox.list'
+  - sudo apt remove virtualbox virtualbox-5.1
+  - sudo apt update -q
+  - sudo apt-get -y install gcc make linux-headers-$(uname -r) dkms
+  - sudo apt update -q
+  - sudo apt-get install virtualbox-5.2
+  - wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
+  - sudo dpkg -i vagrant_2.0.4_x86_64.deb
+  - VBoxManage --version
+  - vagrant version
 install:
   - mvn clean package
 deploy:
@@ -14,4 +27,3 @@ deploy:
   skip_cleanup: true
   on:
     tags: true
-
