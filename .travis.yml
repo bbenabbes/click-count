@@ -5,12 +5,13 @@ jdk:
 before_install:
   - sudo apt-get install -y python-pip
   - sudo pip install ansible==2.8.1
-  - ansible --version
 install:
   - mvn clean package
 deploy:
   provider: releases
+  file: target/clickCount.war
   api_key: $GITHUB_OAUTH_TOKEN
   skip_cleanup: true
   on:
     tags: true
+
