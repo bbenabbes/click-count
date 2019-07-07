@@ -10,8 +10,10 @@ public class Configuration {
     public final int redisConnectionTimeout;  //milliseconds
 
     public Configuration() {
-        redisHost = "redis";
-        redisPort = 6379;
+        String redisHostEnv = System.getenv("REDIS_HOST");
+        redisHost = (redisHostEnv != null) ? redisHostEnv : "redis";
+        String redisPortEnv = System.getenv("REDIS_PORT");
+        redisPort = (redisPortEnv != null) ? Integer.valueOf(redisPortEnv) : 6379;
         redisConnectionTimeout = 2000;
     }
 }
