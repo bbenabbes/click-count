@@ -1,10 +1,8 @@
-dist: xenial
+dist: bionic
 language: java
-jdk:
-  - openjdk8
 before_install:
   - sudo apt-get update -q
-  - sudo apt-get install -yq python3-pip
+  - sudo apt-get install -yq python3-pip ant
   - sudo pip install -q ansible==2.8.1
   - wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
   - wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
@@ -14,12 +12,17 @@ before_install:
   - sudo apt-get -y install gcc make linux-headers-$(uname -r) dkms
   - sudo apt update -q
   - sudo apt-get install virtualbox-5.2
-  - wget https://releases.hashicorp.com/vagrant/2.0.4/vagrant_2.0.4_x86_64.deb
-  - sudo dpkg -i vagrant_2.0.4_x86_64.deb
+  - wget https://releases.hashicorp.com/vagrant/2.2.5/vagrant_2.2.5_x86_64.deb
+  - sudo dpkg -i vagrant_2.2.5_x86_64.deb
   - VBoxManage --version
   - vagrant version
 install:
   - mvn clean package
+  - cd ./click-count-infrastructure
+  - ansible-galaxy install -r requirements.yml
+  - cd ./vagrant/stagging
+  - vagrant up
+  - cd ../../../
 deploy:
   provider: releases
   file: target/clickCount.war
