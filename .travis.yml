@@ -1,9 +1,13 @@
 dist: bionic
 language: java
-before_install:
+
+install:
+  # Install Ansible
   - sudo apt-get update -q
   - sudo apt-get install -yq python3-pip ant
   - sudo pip install -q ansible==2.8.1
+
+  # Install VirtualBox
   - wget -q https://www.virtualbox.org/download/oracle_vbox_2016.asc -O- | sudo apt-key add -
   - wget -q https://www.virtualbox.org/download/oracle_vbox.asc -O- | sudo apt-key add -
   - sudo sh -c 'echo "deb http://download.virtualbox.org/virtualbox/debian $(lsb_release -sc) contrib" >> /etc/apt/sources.list.d/virtualbox.list'
@@ -12,14 +16,26 @@ before_install:
   - sudo apt-get -y install gcc make linux-headers-$(uname -r) dkms
   - sudo apt update -q
   - sudo apt-get install virtualbox-5.2
+
+  # Install Vagrant
   - wget https://releases.hashicorp.com/vagrant/2.2.5/vagrant_2.2.5_x86_64.deb
   - sudo dpkg -i vagrant_2.2.5_x86_64.deb
-  - VBoxManage --version
-  - vagrant version
-install:
+
+script:
+  # Build application package
   - mvn clean package
+
+  # Install Ansible roles
   - cd ./click-count-infrastructure
   - ansible-galaxy install -r requirements.yml
-  - cd ./vagrant/stagging
+
+  # Deploy application on staging environment
+  - cd ./vagrant/staging
   - vagrant up
+
+  # Deploy application on production environment
+  - cd ../production
+  - vagrant up
+
+  # Set path to build.xml file location
   - cd ../../../
